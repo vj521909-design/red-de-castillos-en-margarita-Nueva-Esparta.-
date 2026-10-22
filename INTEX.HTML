@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Red de Castillos - Isla de Margarita</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen pb-20">
+
+  <!-- ENCABEZADO / NAVBAR -->
+  <header class="bg-indigo-900 text-white sticky top-0 z-40 shadow-md">
+    <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <i class="fa-solid fa-archway text-amber-400 text-2xl"></i>
+        <div>
+          <h1 class="font-bold text-sm tracking-wide leading-tight">RED DE CASTILLOS</h1>
+          <p class="text-xs text-indigo-200">Isla de Margarita</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button id="langToggle" class="bg-indigo-800 hover:bg-indigo-700 text-xs text-amber-300 px-3 py-1.5 rounded-full font-semibold border border-indigo-700 transition">
+          <i class="fa-solid fa-globe mr-1"></i> EN
+        </button>
+        <button onclick="openModal('creditsModal')" class="bg-amber-500 hover:bg-amber-400 text-slate-900 p-2 rounded-full text-xs font-bold transition">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-md mx-auto px-4 pt-4 space-y-6">
+
+    <!-- SELECTOR DE CASTILLOS -->
+    <nav class="flex space-x-2 bg-slate-200 p-1 rounded-xl text-xs font-semibold">
+      <button onclick="switchTab('galera')" id="tab-galera" class="flex-1 py-2 text-center rounded-lg transition bg-white text-indigo-900 shadow">
+        La Galera
+      </button>
+      <button onclick="switchTab('borromeo')" id="tab-borromeo" class="flex-1 py-2 text-center rounded-lg transition text-slate-600 hover:text-indigo-900">
+        San Carlos
+      </button>
+      <button onclick="switchTab('santarosa')" id="tab-santarosa" class="flex-1 py-2 text-center rounded-lg transition text-slate-600 hover:text-indigo-900">
+        Santa Rosa
+      </button>
+    </nav>
+
+    <!-- VISTA PRINCIPAL DEL FORTÍN SELECCIONADO -->
+    <section id="contentView" class="space-y-6">
+      <!-- El contenido se inyecta dinámicamente con JavaScript -->
+    </section>
+
+  </main>
+
+  <!-- MODAL PARA VER FOTOS EN GRANDE (LIGHTBOX) -->
+  <div id="lightboxModal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4">
+    <button onclick="closeModal('lightboxModal')" class="absolute top-4 right-4 text-white text-2xl">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <img id="lightboxImg" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain" referrerpolicy="no-referrer">
+  </div>
+
+  <!-- MODAL DE CRÉDITOS ACADÉMICOS -->
+  <div id="creditsModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl relative">
+      <button onclick="closeModal('creditsModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+      <div class="text-center space-y-2">
+        <i class="fa-solid fa-university text-3xl text-indigo-900"></i>
+        <h3 class="font-bold text-lg text-indigo-900">Proyecto Académico</h3>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          «Diseño e Instalación de Señalética Inteligente con Código QR y Desarrollo de Guía Turística Digital Bilingüe sobre la Red de Castillos de la Isla de Margarita»
+        </p>
+      </div>
+      <div class="border-t border-slate-100 pt-3 space-y-1 text-xs text-slate-700">
+        <p><strong>Tutor Académico:</strong> Prof. Gloria Jiménez</p>
+        <p><strong>Ubicación del Piloto:</strong> Fortín de La Galera, Mpio. Gaspar Marcano</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentLang = 'es';
+    let currentFortress = 'galera';
+
+    // DATOS DE LOS CASTILLOS E IMÁGENES REALES
+    const data = {
+      galera: {
+        title: { es: "Fortín de La Galera", en: "La Galera Fort" },
+        location: { es: "Bahía de Juan Griego, Mpio. Gaspar Marcano", en: "Juan Griego Bay, Gaspar Marcano Municipality" },
+        coords: "11.0833, -63.9667",
+        mapsUrl: "https://maps.google.com/?q=11.0833,-63.9667",
+        images: [
+          "https://images.unsplash.com/photo-1596436889106-be35e843f974?auto=format&fit=crop&w=800&q=80",
+          "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+          "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=800&q=80"
+        ],
+        history: {
+          es: "Construido en 1811 por la Junta Provincial de Margarita para proteger el puerto de Juan Griego. Fue escenario de la sangrienta Batalla de Juan Griego el 8 de agosto de 1817, donde las fuerzas patriotas lucharon heroicamente hasta el estallido del pañol de pólvora.",
+          en: "Built in 1811 by the Provincial Council of Margarita to protect the port of Juan Griego. It was the site of the fierce Battle of Juan Griego on August 8, 1817, where patriot forces fought heroically until the powder magazine exploded."
+        }
+      },
+      borromeo: {
+        title: { es: "Castillo San Carlos de Borromeo", en: "San Carlos de Borromeo Castle" },
+        location: { es: "Pampatar, Mpio. Maneiro", en: "Pampatar, Maneiro Municipality" },
+        coords: "10.9981, -63.7972",
+        mapsUrl: "https://maps.google.com/?q=10.9981,-63.7972",
+        images: [
+          "https://images.unsplash.com/photo-1568849676085-51415703900f?auto=format&fit=crop&w=800&q=80",
+          "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
+          "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80"
+        ],
+        history: {
+          es: "Construido entre 1664 y 1684 para defender la bahía de Pampatar contra ataques piratas. Destaca por su arquitectura militar abaluartada de estilo renacentista con foso y puente levadizo.",
+          en: "Constructed between 1664 and 1684 to defend Pampatar Bay against pirate attacks. Famous for its Renaissance-style bastion military architecture with a moat and drawbridge."
+        }
+      },
+      santarosa: {
+        title: { es: "Castillo Santa Rosa de la Eminencia", en: "Santa Rosa Castle" },
+        location: { es: "La Asunción, Mpio. Arismendi", en: "La Asunción, Arismendi Municipality" },
+        coords: "11.0333, -63.8628",
+        mapsUrl: "https://maps.google.com/?q=11.0333,-63.8628",
+        images: [
+          "https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?auto=format&fit=crop&w=800&q=80",
+          "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+          "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80"
+        ],
+        history: {
+          es: "Ubicado estratégiamente en las alturas de La Asunción. Es famoso por haber sido el calabozo de la heroína Luisa Cáceres de Arismendi en 1815 durante la guerra de independencia.",
+          en: "Strategically located on the heights of La Asunción. Famous for being the dungeon of heroine Luisa Cáceres de Arismendi in 1815 during the independence war."
+        }
+      }
+    };
+
+    function renderContent() {
+      const item = data[currentFortress];
+      const view = document.getElementById('contentView');
+
+      view.innerHTML = `
+        <!-- IMAGEN PRINCIPAL -->
+        <div class="relative rounded-2xl overflow-hidden shadow-lg h-56 bg-slate-200">
+          <img src="${item.images[0]}" alt="${item.title[currentLang]}" class="w-full h-full object-cover" referrerpolicy="no-referrer">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          <div class="absolute bottom-4 left-4 right-4 text-white">
+            <h2 class="text-xl font-bold">${item.title[currentLang]}</h2>
+            <p class="text-xs text-slate-200 flex items-center mt-1">
+              <i class="fa-solid fa-location-dot text-amber-400 mr-1.5"></i> ${item.location[currentLang]}
+            </p>
+          </div>
+        </div>
+
+        <!-- RESEÑA HISTÓRICA -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm space-y-2">
+          <h3 class="font-bold text-sm text-indigo-900 uppercase tracking-wider flex items-center">
+            <i class="fa-solid fa-book-bookmark mr-2 text-amber-500"></i>
+            ${currentLang === 'es' ? 'Reseña Histórica' : 'Historical Overview'}
+          </h3>
+          <p class="text-xs text-slate-600 leading-relaxed">${item.history[currentLang]}</p>
+        </div>
+
+        <!-- GALERÍA DE 3 IMÁGENES -->
+        <div class="space-y-2">
+          <h3 class="font-bold text-xs text-slate-500 uppercase tracking-wider">
+            ${currentLang === 'es' ? 'Galería Fotográfica' : 'Photo Gallery'}
+          </h3>
+          <div class="grid grid-cols-3 gap-2">
+            ${item.images.map(img => `
+              <div onclick="openLightbox('${img}')" class="h-24 rounded-xl overflow-hidden cursor-pointer shadow-sm bg-slate-200 hover:opacity-90 transition">
+                <img src="${img}" class="w-full h-full object-cover" referrerpolicy="no-referrer" loading="lazy">
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- BOTÓN NAVEGACIÓN GPS -->
+        <a href="${item.mapsUrl}" target="_blank" class="flex items-center justify-center space-x-2 bg-indigo-900 hover:bg-indigo-800 text-white font-semibold py-3 px-4 rounded-xl shadow-md transition text-xs">
+          <i class="fa-solid fa-map-location-dot text-amber-400 text-base"></i>
+          <span>${currentLang === 'es' ? 'Cómo llegar con GPS (Google Maps)' : 'Navigate with GPS (Google Maps)'}</span>
+        </a>
+      `;
+    }
+
+    function switchTab(fortressKey) {
+      currentFortress = fortressKey;
+      ['galera', 'borromeo', 'santarosa'].forEach(key => {
+        const btn = document.getElementById(`tab-${key}`);
+        if (key === fortressKey) {
+          btn.className = "flex-1 py-2 text-center rounded-lg transition bg-white text-indigo-900 shadow font-bold";
+        } else {
+          btn.className = "flex-1 py-2 text-center rounded-lg transition text-slate-600 hover:text-indigo-900 font-normal";
+        }
+      });
+      renderContent();
+    }
+
+    document.getElementById('langToggle').addEventListener('click', () => {
+      currentLang = currentLang === 'es' ? 'en' : 'es';
+      document.getElementById('langToggle').innerHTML = `<i class="fa-solid fa-globe mr-1"></i> ${currentLang.toUpperCase()}`;
+      renderContent();
+    });
+
+    function openLightbox(url) {
+      document.getElementById('lightboxImg').src = url;
+      document.getElementById('lightboxModal').classList.remove('hidden');
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // Carga inicial
+    renderContent();
+  </script>
+</body>
+</html> 
